@@ -45,13 +45,19 @@ class _TabScanningState extends State<TabScanning> {
       return;
     }
     final regions = <Region>[
+      // Region(
+      //   identifier: 'Cubeacon',
+      //   proximityUUID: 'CB10023F-A318-3394-4199-A8730C7C1AEC',
+      // ),
+      // Region(
+      //   identifier: 'BeaconType2',
+      //   proximityUUID: '6a84c716-0f2a-1ce9-f210-6a63bd873dd9',
+      // ),
       Region(
-        identifier: 'Cubeacon',
-        proximityUUID: 'CB10023F-A318-3394-4199-A8730C7C1AEC',
-      ),
-      Region(
-        identifier: 'BeaconType2',
-        proximityUUID: '6a84c716-0f2a-1ce9-f210-6a63bd873dd9',
+        identifier: 'CustomBeacon',
+        proximityUUID: null,
+        major: null,
+        minor: null
       ),
     ];
 

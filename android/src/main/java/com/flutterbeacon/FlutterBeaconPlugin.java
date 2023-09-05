@@ -1,14 +1,20 @@
 package com.flutterbeacon;
 
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.RemoteException;
 
 import androidx.annotation.NonNull;
 
 import org.altbeacon.beacon.BeaconManager;
 import org.altbeacon.beacon.BeaconParser;
+import org.altbeacon.beacon.logging.LogManager;
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
@@ -25,7 +31,7 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, MethodCallHandler,
     PluginRegistry.RequestPermissionsResultListener,
     PluginRegistry.ActivityResultListener {
-  
+  private static final String TAG = "FlutterBeaconPlugin";
   private static final BeaconParser iBeaconLayout = new BeaconParser()
       .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24");
 
@@ -157,8 +163,30 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
   public void onMethodCall(@NonNull MethodCall call, @NonNull final Result result) {
     if (call.method.equals("initialize")) {
       if (beaconManager != null && !beaconManager.isBound(beaconScanner.beaconConsumer)) {
-        this.flutterResult = result;
-        this.beaconManager.bind(beaconScanner.beaconConsumer);
+
+        Notification.Builder builder = new Notification.Builder(flutterPluginBinding.getApplicationContext());
+        builder.setSmallIcon(R.mipmap.ic_launcher);
+        builder.setContentTitle("Scanning for Beacons");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+          NotificationChannel channel = new NotificationChannel("My Notification Channel ID",
+                  "My Notification Name", NotificationManager.IMPORTANCE_DEFAULT);
+          channel.setDescription("My Notification Channel Description");
+          NotificationManager notificationManager = (NotificationManager) flutterPluginBinding.getApplicationContext().getSystemService(
+                  Context.NOTIFICATION_SERVICE);
+          notificationManager.createNotificationChannel(channel);
+          builder.setChannelId(channel.getId());
+        }
+//        beaconManager.enableForegroundServiceScanning(builder.build(), 456);
+
+
+        beaconManager.setForegroundScanPeriod(1000);
+        beaconManager.setForegroundBetweenScanPeriod(0);
+        LogManager.i(TAG, "enableForegroundServiceScanning.");
+        beaconManager.enableForegroundServiceScanning(builder.build(), 456);
+        beaconManager.setEnableScheduledScanJobs(false);
+
+        flutterResult = result;
+        beaconManager.bind(beaconScanner.beaconConsumer);
 
         return;
       }
