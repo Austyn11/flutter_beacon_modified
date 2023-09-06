@@ -165,7 +165,8 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
       if (beaconManager != null && !beaconManager.isBound(beaconScanner.beaconConsumer)) {
 
         Notification.Builder builder = new Notification.Builder(flutterPluginBinding.getApplicationContext());
-        builder.setSmallIcon(R.mipmap.ic_launcher);
+//        builder.setSmallIcon(R.mipmap.ic_launcher);
+        builder.setSmallIcon(R.drawable.ic_launcher);
         builder.setContentTitle("Scanning for Beacons");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
           NotificationChannel channel = new NotificationChannel("My Notification Channel ID",
