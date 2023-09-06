@@ -34,7 +34,7 @@ class _TabScanningState extends State<TabScanning> {
   }
 
   initScanBeacon() async {
-    await flutterBeacon.initializeScanning;
+    await flutterBeacon.gScanning;
     if (!controller.authorizationStatusOk ||
         !controller.locationServiceEnabled ||
         !controller.bluetoothEnabled) {

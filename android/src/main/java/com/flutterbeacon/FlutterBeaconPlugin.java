@@ -176,14 +176,12 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
           notificationManager.createNotificationChannel(channel);
           builder.setChannelId(channel.getId());
         }
-//        beaconManager.enableForegroundServiceScanning(builder.build(), 456);
 
         beaconManager.setAndroidLScanningDisabled(false); // L 이상만 적용?
         beaconManager.setForegroundScanPeriod(1000); // 1100??
         beaconManager.setForegroundBetweenScanPeriod(0);
         beaconManager.setBackgroundScanPeriod(1000); // 1100??
-        beaconManager.setBackgroundBetweenScanPeriod(0);
-        LogManager.i(TAG, "enableForegroundServiceScanning.");
+//        beaconManager.setBackgroundBetweenScanPeriod(0);
         beaconManager.enableForegroundServiceScanning(builder.build(), 456);
         beaconManager.setEnableScheduledScanJobs(false);
 
@@ -204,9 +202,10 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
 
     if (call.method.equals("setScanPeriod")) {
       int scanPeriod = call.argument("scanPeriod");
-      this.beaconManager.setForegroundScanPeriod(scanPeriod);
+      beaconManager.setForegroundScanPeriod(scanPeriod);
+      beaconManager.setBackgroundScanPeriod(scanPeriod);
       try {
-        this.beaconManager.updateScanPeriods();
+        beaconManager.updateScanPeriods();
         result.success(true);
       } catch (RemoteException e) {
         result.success(false);
@@ -215,9 +214,10 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
 
     if (call.method.equals("setBetweenScanPeriod")) {
       int betweenScanPeriod = call.argument("betweenScanPeriod");
-      this.beaconManager.setForegroundBetweenScanPeriod(betweenScanPeriod);
+      beaconManager.setForegroundBetweenScanPeriod(betweenScanPeriod);
+      beaconManager.setBackgroundBetweenScanPeriod(betweenScanPeriod);
       try {
-        this.beaconManager.updateScanPeriods();
+        beaconManager.updateScanPeriods();
         result.success(true);
       } catch (RemoteException e) {
         result.success(false);
