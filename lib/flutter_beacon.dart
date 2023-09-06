@@ -178,6 +178,14 @@ class FlutterBeacon {
     return result == 1;
   }
 
+  // //**
+  // /// Customize notification configurations of the foreground beacon scan on the Android Platform.
+  // Future<bool> setNotification(String title, String description, String channelId, int notificationId) async {
+  //   return await _methodChannel
+  //       .invokeMethod('setNotification', {"scanPeriod": scanPeriod});
+  // }
+  // //**
+
   /// Customize duration of the beacon scan on the Android Platform.
   Future<bool> setScanPeriod(int scanPeriod) async {
     return await _methodChannel

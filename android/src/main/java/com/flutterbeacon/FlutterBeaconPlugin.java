@@ -166,8 +166,8 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
 
         Notification.Builder builder = new Notification.Builder(flutterPluginBinding.getApplicationContext());
         builder.setSmallIcon(R.mipmap.ic_launcher);
-//        builder.setSmallIcon(R.drawable.ic_launcher);
-        builder.setContentTitle("Scanning for Beacons");
+        builder.setContentTitle("호흡을 측정하고 있습니다.");
+//        builder.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
           NotificationChannel channel = new NotificationChannel("My Notification Channel ID",
                   "My Notification Name", NotificationManager.IMPORTANCE_DEFAULT);
