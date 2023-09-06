@@ -178,9 +178,11 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
         }
 //        beaconManager.enableForegroundServiceScanning(builder.build(), 456);
 
-
-        beaconManager.setForegroundScanPeriod(1000);
+        beaconManager.setAndroidLScanningDisabled(false); // L 이상만 적용?
+        beaconManager.setForegroundScanPeriod(1000); // 1100??
         beaconManager.setForegroundBetweenScanPeriod(0);
+        beaconManager.setBackgroundScanPeriod(1000); // 1100??
+        beaconManager.setBackgroundBetweenScanPeriod(0);
         LogManager.i(TAG, "enableForegroundServiceScanning.");
         beaconManager.enableForegroundServiceScanning(builder.build(), 456);
         beaconManager.setEnableScheduledScanJobs(false);
