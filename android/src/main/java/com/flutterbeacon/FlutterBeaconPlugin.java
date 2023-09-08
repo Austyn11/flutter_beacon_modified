@@ -165,20 +165,22 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
     if (call.method.equals("initialize")) {
       if (beaconManager != null && !beaconManager.isBound(beaconScanner.beaconConsumer)) {
 
-//         인텐트로 앱 실행시키면 플러터에서 init부터 다시 시작해서...
-        LogManager.i(TAG, flutterPluginBinding.getApplicationContext().getPackageName() + ".action");
-        Intent mainIntent = new Intent(flutterPluginBinding.getApplicationContext().getPackageName() + ".action");
+//        LogManager.i(TAG, flutterPluginBinding.getApplicationContext().getPackageName() + ".action");
+//        Intent mainIntent = new Intent(flutterPluginBinding.getApplicationContext().getPackageName() + ".action");
 //        Intent mainIntent = new Intent(flutterPluginBinding.getApplicationContext().getPackageManager().getLaunchIntentForPackage(flutterPluginBinding.getApplicationContext().getPackageName()));
 //        mainIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK); // Intent.FLAG_ACTIVITY_SINGLE_TOP|Intent.FLAG_ACTIVITY_CLEAR_TASK
-        PendingIntent mainPendingIntent = PendingIntent.getActivity(flutterPluginBinding.getApplicationContext() , 0, mainIntent, PendingIntent.FLAG_ONE_SHOT); // PendingIntent.FLAG_IMMUTABLE
-//        PendingIntent connectionClosePendingIntent = PendingIntent.getS(flutterPluginBinding.getApplicationContext(), 0, mainIntent, PendingIntent.FLAG_ONE_SHOT);
+//        PendingIntent mainPendingIntent = PendingIntent.getActivity(flutterPluginBinding.getApplicationContext() , 0, mainIntent, PendingIntent.FLAG_ONE_SHOT); // PendingIntent.FLAG_IMMUTABLE
+//        PendingIntent connectionClosePendingIntent = PendingIntent.get(flutterPluginBinding.getApplicationContext(), 0, mainIntent, PendingIntent.FLAG_ONE_SHOT);
+
+//        flutterPluginBinding.getApplicationContext().unbindService();
+//        beaconManager.unbind(beaconScanner.beaconConsumer);
 
         Notification.Builder builder = new Notification.Builder(flutterPluginBinding.getApplicationContext());
         builder.setSmallIcon(R.mipmap.ic_launcher);
         builder.setContentTitle("호흡을 측정하고 있습니다.");
         builder.setAutoCancel(false); // true면 Notification 클릭시 삭제
         builder.setOngoing(true);
-        builder.setContentIntent(mainPendingIntent);
+//        builder.setContentIntent(mainPendingIntent);
 //        builder.addAction("종료", connectionClosePendingIntent);
 //        builder.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -270,7 +272,7 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
       return;
     }
 
-    if (call.method.equals("requestAuthorization")) {
+    if (call.method.equals("requestAuthorization")) { // TODO ACCESS_COARSE_LOCATION ACCESS_FINE_LOCATION
       if (!platform.checkLocationServicesPermission()) {
         this.flutterResult = result;
         platform.requestAuthorization();
@@ -309,7 +311,7 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
       return;
     }
 
-    if (call.method.equals("openLocationSettings")) {
+    if (call.method.equals("openLocationSettings")) { // TODO
       platform.openLocationSettings();
       result.success(true);
       return;
