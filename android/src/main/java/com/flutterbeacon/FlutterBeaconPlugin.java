@@ -165,7 +165,8 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
     if (call.method.equals("initialize")) {
       if (beaconManager != null && !beaconManager.isBound(beaconScanner.beaconConsumer)) {
 
-        Intent mainIntent = new Intent(flutterPluginBinding.getApplicationContext().getPackageName() + ".action");
+//        Intent mainIntent = new Intent(flutterPluginBinding.getApplicationContext().getPackageName() + ".action");
+        Intent mainIntent = new Intent(flutterPluginBinding.getApplicationContext().getPackageManager().getLaunchIntentForPackage(flutterPluginBinding.getApplicationContext().getPackageName()));
         mainIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent mainPendingIntent = PendingIntent.getActivity(flutterPluginBinding.getApplicationContext() , 0, mainIntent, PendingIntent.FLAG_ONE_SHOT); // PendingIntent.FLAG_IMMUTABLE
 
