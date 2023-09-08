@@ -168,7 +168,7 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
 //         인텐트로 앱 실행시키면 플러터에서 init부터 다시 시작해서...
 //        Intent mainIntent = new Intent(flutterPluginBinding.getApplicationContext().getPackageName() + ".action");
         Intent mainIntent = new Intent(flutterPluginBinding.getApplicationContext().getPackageManager().getLaunchIntentForPackage(flutterPluginBinding.getApplicationContext().getPackageName()));
-        mainIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        mainIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP); // |Intent.FLAG_ACTIVITY_CLEAR_TASK
         PendingIntent mainPendingIntent = PendingIntent.getActivity(flutterPluginBinding.getApplicationContext() , 0, mainIntent, PendingIntent.FLAG_ONE_SHOT); // PendingIntent.FLAG_IMMUTABLE
 //        PendingIntent connectionClosePendingIntent = PendingIntent.getS(flutterPluginBinding.getApplicationContext(), 0, mainIntent, PendingIntent.FLAG_ONE_SHOT);
 
