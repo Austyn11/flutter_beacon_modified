@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -164,9 +165,16 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
     if (call.method.equals("initialize")) {
       if (beaconManager != null && !beaconManager.isBound(beaconScanner.beaconConsumer)) {
 
+        Intent mainIntent = new Intent(flutterPluginBinding.getApplicationContext().getPackageName() + ".action");
+        mainIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent mainPendingIntent = PendingIntent.getActivity(flutterPluginBinding.getApplicationContext() , 0, mainIntent, PendingIntent.FLAG_ONE_SHOT); // PendingIntent.FLAG_IMMUTABLE
+
+
         Notification.Builder builder = new Notification.Builder(flutterPluginBinding.getApplicationContext());
         builder.setSmallIcon(R.mipmap.ic_launcher);
         builder.setContentTitle("호흡을 측정하고 있습니다.");
+        builder.setContentIntent(mainPendingIntent);
+//        builder.addAction("종료", connectionClosePendingIntent);
 //        builder.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
           NotificationChannel channel = new NotificationChannel("My Notification Channel ID",
@@ -178,10 +186,10 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
           builder.setChannelId(channel.getId());
         }
 
-        beaconManager.setAndroidLScanningDisabled(false); // L 이상만 적용?
+        beaconManager.setAndroidLScanningDisabled(false);
         beaconManager.setForegroundScanPeriod(1000); // 1100??
         beaconManager.setForegroundBetweenScanPeriod(0);
-        beaconManager.setBackgroundScanPeriod(1000); // 1100??
+//        beaconManager.setBackgroundScanPeriod(1000); // 1100??
 //        beaconManager.setBackgroundBetweenScanPeriod(0);
         beaconManager.enableForegroundServiceScanning(builder.build(), 456);
         beaconManager.setEnableScheduledScanJobs(false);
@@ -204,7 +212,7 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
     if (call.method.equals("setScanPeriod")) {
       int scanPeriod = call.argument("scanPeriod");
       beaconManager.setForegroundScanPeriod(scanPeriod);
-      beaconManager.setBackgroundScanPeriod(scanPeriod);
+//      beaconManager.setBackgroundScanPeriod(scanPeriod);
       try {
         beaconManager.updateScanPeriods();
         result.success(true);
@@ -216,7 +224,7 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
     if (call.method.equals("setBetweenScanPeriod")) {
       int betweenScanPeriod = call.argument("betweenScanPeriod");
       beaconManager.setForegroundBetweenScanPeriod(betweenScanPeriod);
-      beaconManager.setBackgroundBetweenScanPeriod(betweenScanPeriod);
+//      beaconManager.setBackgroundBetweenScanPeriod(betweenScanPeriod);
       try {
         beaconManager.updateScanPeriods();
         result.success(true);
@@ -314,6 +322,7 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
         beaconScanner.stopMonitoring();
         beaconManager.removeAllMonitorNotifiers();
         if (beaconManager.isBound(beaconScanner.beaconConsumer)) {
+          LogManager.i(TAG, "close unbind");
           beaconManager.unbind(beaconScanner.beaconConsumer);
         }
       }
