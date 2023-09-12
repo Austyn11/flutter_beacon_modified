@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 
 import org.altbeacon.beacon.BeaconManager;
 import org.altbeacon.beacon.BeaconParser;
+import org.altbeacon.beacon.Region;
 import org.altbeacon.beacon.logging.LogManager;
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
@@ -216,7 +217,8 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
         if (beaconManager.isBound(beaconScanner.beaconConsumer)) {
           result.success(0);  // 정상 연결
         } else {
-          beaconManager.shutdownIfIdle();
+          Region region = new Region(null, null, null);
+          beaconManager.stopRangingBeacons(region);
 //          beaconManager.unbind(beaconScanner.beaconConsumer);
 //          beaconManager.disableForegroundServiceScanning();
           result.success(1);  // unbind error
