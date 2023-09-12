@@ -216,6 +216,7 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
         if (beaconManager.isBound(beaconScanner.beaconConsumer)) {
           result.success(0);  // bound
         } else {
+          beaconManager.unbind(beaconScanner.beaconConsumer);
           beaconManager.disableForegroundServiceScanning();
           result.success(1);  // unbind error
         }
