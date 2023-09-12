@@ -176,7 +176,7 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
 //        beaconManager.unbind(beaconScanner.beaconConsumer);
 
         Notification.Builder builder = new Notification.Builder(flutterPluginBinding.getApplicationContext());
-        builder.setSmallIcon(R.mipmap.ic_launcher);
+        builder.setSmallIcon(R.mipmap.ic_fitforme_launcher);
         builder.setContentTitle("호흡을 측정하고 있습니다.");
         builder.setAutoCancel(false); // true면 Notification 클릭시 삭제
         builder.setOngoing(true);
