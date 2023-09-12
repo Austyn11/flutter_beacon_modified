@@ -68,6 +68,16 @@ class FlutterBeacon {
     return result;
   }
 
+  /// Check whether Foreground Service is bound.
+  Future<bool> get isBeaconServiceBound async {
+    final result = await _methodChannel.invokeMethod('isBeaconServiceBound');
+    return result;
+    // if (result is bool) {
+    //   return result;
+    // }
+    // return result == 1;
+  }
+
   /// Initialize scanning API and check required permissions.
   ///
   /// For Android, it will check whether Bluetooth is enabled,
@@ -78,11 +88,9 @@ class FlutterBeacon {
   /// whether location services is enabled.
   Future<bool> get initializeAndCheckScanning async {
     final result = await _methodChannel.invokeMethod('initializeAndCheck');
-
     if (result is bool) {
       return result;
     }
-
     return result == 1;
   }
 
