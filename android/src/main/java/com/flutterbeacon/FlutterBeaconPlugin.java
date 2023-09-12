@@ -202,6 +202,9 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
         beaconManager.setEnableScheduledScanJobs(false);
 
         flutterResult = result;
+        if (beaconManager.isBound(beaconScanner.beaconConsumer)) {
+          beaconManager.unbind(beaconScanner.beaconConsumer);
+        }
         beaconManager.bind(beaconScanner.beaconConsumer);
 
         return;
