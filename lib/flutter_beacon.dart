@@ -69,7 +69,7 @@ class FlutterBeacon {
   }
 
   /// Check whether Foreground Service is bound.
-  Future<bool> get isBeaconServiceBound async {
+  Future<int> get isBeaconServiceBound async {
     final result = await _methodChannel.invokeMethod('isBeaconServiceBound');
     return result;
     // if (result is bool) {
