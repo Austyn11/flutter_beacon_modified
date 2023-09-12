@@ -202,9 +202,6 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
         beaconManager.setEnableScheduledScanJobs(false);
 
         flutterResult = result;
-        if (beaconManager.isBound(beaconScanner.beaconConsumer)) {
-          beaconManager.unbind(beaconScanner.beaconConsumer);
-        }
         beaconManager.bind(beaconScanner.beaconConsumer);
 
         return;
@@ -215,9 +212,33 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
     }
 
     if (call.method.equals("isBeaconServiceBound")) {
+      if (beaconManager != null) {
+        if (beaconManager.isBound(beaconScanner.beaconConsumer)) {
+          result.success(true);
+        } else {
+          result.success(false);
+          beaconManager.unbind(beaconScanner.beaconConsumer);
+        }
+      } else {
+        result.success(false);
+      }
+
+
+
+      if (beaconManager != null) {
+        beaconScanner.stopRanging();
+        beaconManager.removeAllRangeNotifiers();
+        beaconScanner.stopMonitoring();
+        beaconManager.removeAllMonitorNotifiers();
+        if (beaconManager.isBound(beaconScanner.beaconConsumer)) {
+          LogManager.i(TAG, "close unbind");
+          beaconManager.unbind(beaconScanner.beaconConsumer);
+        }
+      }
       if (beaconManager.isBound(beaconScanner.beaconConsumer)) {
         result.success(true);
       } else {
+        beaconManager.unbind(beaconScanner.beaconConsumer);
         result.success(false);
       }
       return;
