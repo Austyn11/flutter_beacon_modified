@@ -2,6 +2,7 @@ group 'com.flutterbeacon'
 version '1.0-SNAPSHOT'
 buildscript {
     repositories {
+        mavenCentral()
         google()
         jcenter()
     }

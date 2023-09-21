@@ -199,6 +199,7 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
         beaconManager.setForegroundBetweenScanPeriod(0);
 //        beaconManager.setBackgroundScanPeriod(1000); // 1100??
 //        beaconManager.setBackgroundBetweenScanPeriod(0);
+
         beaconManager.enableForegroundServiceScanning(builder.build(), 456);
         beaconManager.setEnableScheduledScanJobs(false);
 
@@ -217,8 +218,10 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
         if (beaconManager.isBound(beaconScanner.beaconConsumer)) {
           result.success(0);  // 정상 연결
         } else {
-          Region region = new Region("CustomBeacon",null,null,null);
-          beaconManager.stopRangingBeacons(region);
+//          beaconManager.
+//          beaconScanner.beaconConsumer.
+//          Region region = new Region("CustomBeacon",null,null,null);
+//          beaconManager.stopRangingBeacons(region);
 //          beaconManager.unbind(beaconScanner.beaconConsumer);
 //          beaconManager.disableForegroundServiceScanning();
           result.success(1);  // unbind error
