@@ -133,6 +133,11 @@ class FlutterBeacon {
     return BluetoothState.parse(status);
   }
 
+  Future<BluetoothState> get setBluetoothState async {
+    final status = await _methodChannel.invokeMethod('setBluetoothState');
+    return status;
+  }
+
   /// Request an authorization to the device.
   ///
   /// For Android, this will request a permission of `Manifest.permission.ACCESS_COARSE_LOCATION`.

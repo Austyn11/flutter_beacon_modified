@@ -1,5 +1,5 @@
 package com.flutterbeacon;
-
+import android.bluetooth.BluetoothAdapter;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -37,6 +37,11 @@ class FlutterPlatform {
   }
 
   void openBluetoothSettings() {
+    Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+    getActivity().startActivityForResult(intent, FlutterBeaconPlugin.REQUEST_CODE_BLUETOOTH);
+  }
+
+  void setBluetoothState() {
     Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
     getActivity().startActivityForResult(intent, FlutterBeaconPlugin.REQUEST_CODE_BLUETOOTH);
   }

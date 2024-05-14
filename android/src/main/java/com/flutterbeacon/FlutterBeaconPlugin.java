@@ -5,6 +5,7 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -166,16 +167,6 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
     if (call.method.equals("initialize")) {
       if (beaconManager != null && !beaconManager.isBound(beaconScanner.beaconConsumer)) {
 
-//        LogManager.i(TAG, flutterPluginBinding.getApplicationContext().getPackageName() + ".action");
-//        Intent mainIntent = new Intent(flutterPluginBinding.getApplicationContext().getPackageName() + ".action");
-//        Intent mainIntent = new Intent(flutterPluginBinding.getApplicationContext().getPackageManager().getLaunchIntentForPackage(flutterPluginBinding.getApplicationContext().getPackageName()));
-//        mainIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK); // Intent.FLAG_ACTIVITY_SINGLE_TOP|Intent.FLAG_ACTIVITY_CLEAR_TASK
-//        PendingIntent mainPendingIntent = PendingIntent.getActivity(flutterPluginBinding.getApplicationContext() , 0, mainIntent, PendingIntent.FLAG_ONE_SHOT); // PendingIntent.FLAG_IMMUTABLE
-//        PendingIntent connectionClosePendingIntent = PendingIntent.get(flutterPluginBinding.getApplicationContext(), 0, mainIntent, PendingIntent.FLAG_ONE_SHOT);
-
-//        flutterPluginBinding.getApplicationContext().unbindService();
-//        beaconManager.unbind(beaconScanner.beaconConsumer);
-
         Notification.Builder builder = new Notification.Builder(flutterPluginBinding.getApplicationContext());
         builder.setSmallIcon(R.mipmap.ic_fitforme_launcher);
         builder.setContentTitle("호흡을 측정하고 있습니다.");
@@ -197,8 +188,6 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
         beaconManager.setAndroidLScanningDisabled(false);
         beaconManager.setForegroundScanPeriod(1000); // 1100??
         beaconManager.setForegroundBetweenScanPeriod(0);
-//        beaconManager.setBackgroundScanPeriod(1000); // 1100??
-//        beaconManager.setBackgroundBetweenScanPeriod(0);
 
         beaconManager.enableForegroundServiceScanning(builder.build(), 456);
         beaconManager.setEnableScheduledScanJobs(false);
@@ -302,6 +291,38 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
       }
 
       result.success("STATE_UNSUPPORTED");
+      return;
+    }
+
+    if (call.method.equals("setBluetoothState")) {
+      boolean enable = call.argument("enable");
+      BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+      if (bluetoothAdapter == null) {
+        result.error("UNAVAILABLE", "Bluetooth not supported", null);
+        return;
+      }
+
+      if (enable) {
+        if (!bluetoothAdapter.isEnabled()) {
+          Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+          if (activityPluginBinding.getActivity() != null) {
+            this.flutterResultBluetooth = result;
+            activityPluginBinding.getActivity().startActivityForResult(enableBtIntent, REQUEST_CODE_BLUETOOTH);
+          } else {
+            result.error("ACTIVITY_NOT_AVAILABLE", "Activity is not available", null);
+          }
+        } else {
+          result.success("STATE_ON");
+        }
+      } else {
+        if (bluetoothAdapter.isEnabled()) {
+          bluetoothAdapter.disable();
+          result.success("STATE_OFF");
+        } else {
+          result.success("STATE_OFF");
+        }
+      }
       return;
     }
 
@@ -494,31 +515,47 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
 
   @Override
   public boolean onActivityResult(int requestCode, int resultCode, Intent intent) {
-    boolean bluetoothEnabled = requestCode == REQUEST_CODE_BLUETOOTH && resultCode == Activity.RESULT_OK;
-
-    if (bluetoothEnabled) {
-      if (!platform.checkLocationServicesPermission()) {
-        platform.requestAuthorization();
+    if (requestCode == REQUEST_CODE_BLUETOOTH) {
+      if (resultCode == Activity.RESULT_OK) {
+        if (flutterResultBluetooth != null) {
+          flutterResultBluetooth.success("Bluetooth enabled");
+        }
       } else {
         if (flutterResultBluetooth != null) {
-          flutterResultBluetooth.success(true);
-          flutterResultBluetooth = null;
-        } else if (flutterResult != null) {
-          flutterResult.success(true);
-          flutterResult = null;
+          flutterResultBluetooth.error("ERROR", "Bluetooth enabling canceled", null);
         }
       }
-    } else {
-      if (flutterResultBluetooth != null) {
-        flutterResultBluetooth.error("Beacon", "bluetooth disabled", null);
-        flutterResultBluetooth = null;
-      } else if (flutterResult != null) {
-        flutterResult.error("Beacon", "bluetooth disabled", null);
-        flutterResult = null;
-      }
+      flutterResultBluetooth = null;
+      return true;
     }
 
-    return bluetoothEnabled;
+    return false;
+
   }
+//    boolean bluetoothEnabled = requestCode == REQUEST_CODE_BLUETOOTH && resultCode == Activity.RESULT_OK;
+//    if (bluetoothEnabled) {
+//      if (!platform.checkLocationServicesPermission()) {
+//        platform.requestAuthorization();
+//      } else {
+//        if (flutterResultBluetooth != null) {
+//          flutterResultBluetooth.success(true);
+//          flutterResultBluetooth = null;
+//        } else if (flutterResult != null) {
+//          flutterResult.success(true);
+//          flutterResult = null;
+//        }
+//      }
+//    } else {
+//      if (flutterResultBluetooth != null) {
+//        flutterResultBluetooth.error("Beacon", "bluetooth disabled", null);
+//        flutterResultBluetooth = null;
+//      } else if (flutterResult != null) {
+//        flutterResult.error("Beacon", "bluetooth disabled", null);
+//        flutterResult = null;
+//      }
+//    }
+//
+//    return bluetoothEnabled;
+//  }
   // endregion
 }
