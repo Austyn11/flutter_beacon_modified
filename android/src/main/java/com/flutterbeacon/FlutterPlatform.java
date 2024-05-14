@@ -41,11 +41,6 @@ class FlutterPlatform {
     getActivity().startActivityForResult(intent, FlutterBeaconPlugin.REQUEST_CODE_BLUETOOTH);
   }
 
-  void setBluetoothState() {
-    Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-    getActivity().startActivityForResult(intent, FlutterBeaconPlugin.REQUEST_CODE_BLUETOOTH);
-  }
-
   void requestAuthorization() {
     ActivityCompat.requestPermissions(getActivity(), new String[]{
         Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -90,7 +85,22 @@ class FlutterPlatform {
 
     return (adapter != null) && (adapter.isEnabled());
   }
-  
+
+  void setBluetoothState(Boolean enable) {
+//    Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+//    getActivity().startActivityForResult(intent, FlutterBeaconPlugin.REQUEST_CODE_BLUETOOTH);
+//    if (!checkLocationServicesPermission()) {
+//        requestAuthorization();
+//    } else {
+    BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+    if (enable) {
+      bluetoothAdapter.enable();
+    } else {
+      bluetoothAdapter.disable();
+    }
+
+  }
+
   boolean isBroadcastSupported() {
     return BeaconTransmitter.checkTransmissionSupported(getActivity()) == 0;
   }

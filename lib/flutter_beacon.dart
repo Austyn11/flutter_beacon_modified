@@ -7,6 +7,7 @@ library flutter_beacon;
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -133,8 +134,8 @@ class FlutterBeacon {
     return BluetoothState.parse(status);
   }
 
-  Future<BluetoothState> get setBluetoothState async {
-    final status = await _methodChannel.invokeMethod('setBluetoothState');
+  Future<BluetoothState> setBluetoothState(Bool enable) async {
+    final status = await _methodChannel.invokeMethod('setBluetoothState', {'enable': enable});
     return status;
   }
 
