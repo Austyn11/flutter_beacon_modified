@@ -134,7 +134,7 @@ class FlutterBeacon {
     return BluetoothState.parse(status);
   }
 
-  Future<BluetoothState> setBluetoothState(Bool enable) async {
+  Future<String> setBluetoothState(bool enable) async {
     final status = await _methodChannel.invokeMethod('setBluetoothState', {'enable': enable});
     return status;
   }

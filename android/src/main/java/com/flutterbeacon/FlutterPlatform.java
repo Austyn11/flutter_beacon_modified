@@ -86,7 +86,7 @@ class FlutterPlatform {
     return (adapter != null) && (adapter.isEnabled());
   }
 
-  void setBluetoothState(Boolean enable) {
+  void setBluetoothState(boolean enable) {
 //    Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
 //    getActivity().startActivityForResult(intent, FlutterBeaconPlugin.REQUEST_CODE_BLUETOOTH);
 //    if (!checkLocationServicesPermission()) {
