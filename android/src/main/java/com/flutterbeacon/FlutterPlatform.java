@@ -88,41 +88,6 @@ class FlutterPlatform {
     return (adapter != null) && (adapter.isEnabled());
   }
 
-//  void setBluetoothState(boolean enable) {
-////    Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-////    getActivity().startActivityForResult(intent, FlutterBeaconPlugin.REQUEST_CODE_BLUETOOTH);
-////    if (!checkLocationServicesPermission()) {
-////        requestAuthorization();
-////    } else {
-//    BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-//    if (bluetoothAdapter == null) {
-//      LogManager.i(TAG, "Device doesn't support Bluetooth");
-//      return;
-//    }
-//    if (enable) {
-//      if (!bluetoothAdapter.isEnabled()) {
-//        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-//        activity.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-//      } else {
-//        Log.i(TAG, "Bluetooth is already enabled");
-//      }
-//    } else {
-//      if (bluetoothAdapter.isEnabled()) {
-//        bluetoothAdapter.disable();
-//        Log.i(TAG, "Bluetooth is being disabled");
-//      } else {
-//        Log.i(TAG, "Bluetooth is already disabled");
-//      }
-//    }
-//
-//    if (enable) {
-//      boolean isBTEnabled = bluetoothAdapter.enable();
-//      LogManager.i(TAG, "setBluetoothState isBTEnabled" + isBTEnabled);
-//    } else {
-//      boolean isBTEnabled = bluetoothAdapter.disable();
-//      LogManager.i(TAG, "setBluetoothState isBTEnabled" + isBTEnabled);
-//    }
-//  }
 
   boolean isBroadcastSupported() {
     return BeaconTransmitter.checkTransmissionSupported(getActivity()) == 0;

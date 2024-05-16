@@ -207,11 +207,11 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
         if (beaconManager.isBound(beaconScanner.beaconConsumer)) {
           result.success(0);  // 정상 연결
         } else {
-          Region region = new Region("CustomBeacon",null,null,null);
+          Region region = new Region("FitforMe",null,null,null);  // FitforMe  CustomBeacon
           beaconManager.stopRangingBeacons(region);
 //          beaconManager.stopRangingBeacons(region);
 //          beaconManager.unbind(beaconScanner.beaconConsumer);
-//          beaconManager.disableForegroundServiceScanning();
+//          beaconManager.disableForegroundServiceScanning(); TODO ??
           result.success(1);  // unbind error
         }
       } else {
@@ -309,17 +309,11 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             activityPluginBinding.getActivity().startActivityForResult(enableBtIntent, REQUEST_CODE_BLUETOOTH);
           } else {
-//            boolean flag = platform.checkBluetoothIfEnabled();
-//            result.success(flag ? "STATE_ON" : "STATE_OFF");
             result.success("STATE_ON");
             flutterResult = null;
           }
         }
 
-//        platform.setBluetoothState(enable);
-//        boolean flag = platform.checkBluetoothIfEnabled();
-//        LogManager.i(TAG, "method: setBluetoothState, argument: " + enable + ", result flag:" + flag);
-//        result.success(flag ? "STATE_ON" : "STATE_OFF");
         return;
       } catch (RuntimeException ignored) {
 
@@ -327,37 +321,9 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
       result.success("STATE_UNSUPPORTED");
       return;
 
-//
-//
-//      if (bluetoothAdapter == null) {
-//        result.error("UNAVAILABLE", "Bluetooth not supported", null);
-//        return;
-//      }
-//
-//      if (enable) {
-//        if (!bluetoothAdapter.isEnabled()) {
-//          Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-//          if (activityPluginBinding.getActivity() != null) {
-//            this.flutterResultBluetooth = result;
-//            activityPluginBinding.getActivity().startActivityForResult(enableBtIntent, REQUEST_CODE_BLUETOOTH);
-//          } else {
-//            result.error("ACTIVITY_NOT_AVAILABLE", "Activity is not available", null);
-//          }
-//        } else {
-//          result.success("STATE_ON");
-//        }
-//      } else {
-//        if (bluetoothAdapter.isEnabled()) {
-//          bluetoothAdapter.disable();
-//          result.success("STATE_OFF");
-//        } else {
-//          result.success("STATE_OFF");
-//        }
-//      }
-//      return;
     }
 
-    if (call.method.equals("requestAuthorization")) { // TODO ACCESS_COARSE_LOCATION ACCESS_FINE_LOCATION
+    if (call.method.equals("requestAuthorization")) {
       if (!platform.checkLocationServicesPermission()) {
         this.flutterResult = result;
         platform.requestAuthorization();
@@ -385,18 +351,18 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
       return;
     }
 
-//    if (call.method.equals("openBluetoothSettings")) {
-//      if (!platform.checkBluetoothIfEnabled()) {
-//        this.flutterResultBluetooth = result;
-//        platform.openBluetoothSettings();
-//        return;
-//      }
-//
-//      result.success(true);
-//      return;
-//    }
+    if (call.method.equals("openBluetoothSettings")) {
+      if (!platform.checkBluetoothIfEnabled()) {
+        this.flutterResultBluetooth = result;
+        platform.openBluetoothSettings();
+        return;
+      }
 
-    if (call.method.equals("openLocationSettings")) { // TODO
+      result.success(true);
+      return;
+    }
+
+    if (call.method.equals("openLocationSettings")) {
       platform.openLocationSettings();
       result.success(true);
       return;
@@ -559,54 +525,6 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
     }
     return false;
 
-//    if (requestCode == REQUEST_CODE_BLUETOOTH) {
-//      if (resultCode == Activity.RESULT_OK) {
-//        LogManager.i(TAG, "Bluetooth enabled successfully");
-//      } else {
-//        LogManager.i(TAG, "Bluetooth enabling failed or was cancelled by user");
-//      }
-//    }
   }
-//    if (requestCode == REQUEST_CODE_BLUETOOTH) {
-//      if (resultCode == Activity.RESULT_OK) {
-//        if (flutterResultBluetooth != null) {
-//          flutterResultBluetooth.success("Bluetooth enabled");
-//        }
-//      } else {
-//        if (flutterResultBluetooth != null) {
-//          flutterResultBluetooth.error("ERROR", "Bluetooth enabling canceled", null);
-//        }
-//      }
-//      flutterResultBluetooth = null;
-//      return true;
-//    }
-//    return false;
 
-
-//    boolean bluetoothEnabled = requestCode == REQUEST_CODE_BLUETOOTH && resultCode == Activity.RESULT_OK;
-//    if (bluetoothEnabled) {
-//      if (!platform.checkLocationServicesPermission()) {
-//        platform.requestAuthorization();
-//      } else {
-//        if (flutterResultBluetooth != null) {
-//          flutterResultBluetooth.success(true);
-//          flutterResultBluetooth = null;
-//        } else if (flutterResult != null) {
-//          flutterResult.success(true);
-//          flutterResult = null;
-//        }
-//      }
-//    } else {
-//      if (flutterResultBluetooth != null) {
-//        flutterResultBluetooth.error("Beacon", "bluetooth disabled", null);
-//        flutterResultBluetooth = null;
-//      } else if (flutterResult != null) {
-//        flutterResult.error("Beacon", "bluetooth disabled", null);
-//        flutterResult = null;
-//      }
-//    }
-//
-//    return bluetoothEnabled;
-//  }
-  // endregion
 }
