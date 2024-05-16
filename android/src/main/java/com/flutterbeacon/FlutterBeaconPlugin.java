@@ -295,12 +295,30 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
     }
 
     if (call.method.equals("setBluetoothState")) {
+      BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+      if (bluetoothAdapter == null) {
+        LogManager.i(TAG, "Device doesn't support Bluetooth");
+        return;
+      }
+
+      flutterResult = result;
       try {
         boolean enable = call.argument("enable");
-        platform.setBluetoothState(enable);
-        boolean flag = platform.checkBluetoothIfEnabled();
-        LogManager.i(TAG, "method: setBluetoothState, argument: " + enable + ", result flag:" + flag);
-        result.success(flag ? "STATE_ON" : "STATE_OFF");
+        if (enable) {
+          if (!bluetoothAdapter.isEnabled()) {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            activityPluginBinding.getActivity().startActivityForResult(enableBtIntent, REQUEST_CODE_BLUETOOTH);
+          } else {
+            boolean flag = platform.checkBluetoothIfEnabled();
+            result.success(flag ? "STATE_ON" : "STATE_OFF");
+            flutterResult = null;
+          }
+        }
+
+//        platform.setBluetoothState(enable);
+//        boolean flag = platform.checkBluetoothIfEnabled();
+//        LogManager.i(TAG, "method: setBluetoothState, argument: " + enable + ", result flag:" + flag);
+//        result.success(flag ? "STATE_ON" : "STATE_OFF");
         return;
       } catch (RuntimeException ignored) {
 
@@ -308,7 +326,7 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
       result.success("STATE_UNSUPPORTED");
       return;
 
-//      BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+//
 //
 //      if (bluetoothAdapter == null) {
 //        result.error("UNAVAILABLE", "Bluetooth not supported", null);
@@ -528,22 +546,42 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
   @Override
   public boolean onActivityResult(int requestCode, int resultCode, Intent intent) {
     if (requestCode == REQUEST_CODE_BLUETOOTH) {
-      if (resultCode == Activity.RESULT_OK) {
-        if (flutterResultBluetooth != null) {
-          flutterResultBluetooth.success("Bluetooth enabled");
+      if (flutterResult != null) {
+        if (resultCode == Activity.RESULT_OK) {
+          flutterResult.success(true);
+        } else {
+          flutterResult.error("BLUETOOTH_NOT_ENABLED", "Bluetooth enabling failed or was cancelled by user", null);
         }
-      } else {
-        if (flutterResultBluetooth != null) {
-          flutterResultBluetooth.error("ERROR", "Bluetooth enabling canceled", null);
-        }
+        flutterResult = null;
       }
-      flutterResultBluetooth = null;
       return true;
     }
-
     return false;
 
+//    if (requestCode == REQUEST_CODE_BLUETOOTH) {
+//      if (resultCode == Activity.RESULT_OK) {
+//        LogManager.i(TAG, "Bluetooth enabled successfully");
+//      } else {
+//        LogManager.i(TAG, "Bluetooth enabling failed or was cancelled by user");
+//      }
+//    }
   }
+//    if (requestCode == REQUEST_CODE_BLUETOOTH) {
+//      if (resultCode == Activity.RESULT_OK) {
+//        if (flutterResultBluetooth != null) {
+//          flutterResultBluetooth.success("Bluetooth enabled");
+//        }
+//      } else {
+//        if (flutterResultBluetooth != null) {
+//          flutterResultBluetooth.error("ERROR", "Bluetooth enabling canceled", null);
+//        }
+//      }
+//      flutterResultBluetooth = null;
+//      return true;
+//    }
+//    return false;
+
+
 //    boolean bluetoothEnabled = requestCode == REQUEST_CODE_BLUETOOTH && resultCode == Activity.RESULT_OK;
 //    if (bluetoothEnabled) {
 //      if (!platform.checkLocationServicesPermission()) {
