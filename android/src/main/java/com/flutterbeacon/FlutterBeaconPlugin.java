@@ -309,8 +309,9 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             activityPluginBinding.getActivity().startActivityForResult(enableBtIntent, REQUEST_CODE_BLUETOOTH);
           } else {
-            boolean flag = platform.checkBluetoothIfEnabled();
-            result.success(flag ? "STATE_ON" : "STATE_OFF");
+//            boolean flag = platform.checkBluetoothIfEnabled();
+//            result.success(flag ? "STATE_ON" : "STATE_OFF");
+            result.success("STATE_ON");
             flutterResult = null;
           }
         }
@@ -548,7 +549,7 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
     if (requestCode == REQUEST_CODE_BLUETOOTH) {
       if (flutterResult != null) {
         if (resultCode == Activity.RESULT_OK) {
-          flutterResult.success(true);
+          flutterResult.success("STATE_ON");
         } else {
           flutterResult.error("BLUETOOTH_NOT_ENABLED", "Bluetooth enabling failed or was cancelled by user", null);
         }
