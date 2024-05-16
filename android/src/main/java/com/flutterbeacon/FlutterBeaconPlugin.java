@@ -299,7 +299,7 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
         boolean enable = call.argument("enable");
         platform.setBluetoothState(enable);
         boolean flag = platform.checkBluetoothIfEnabled();
-        LogManager.i(TAG, "method: setBluetoothState, argument: " + enable + " result flag:" + flag);
+        LogManager.i(TAG, "method: setBluetoothState, argument: " + enable + ", result flag:" + flag);
         result.success(flag ? "STATE_ON" : "STATE_OFF");
         return;
       } catch (RuntimeException ignored) {

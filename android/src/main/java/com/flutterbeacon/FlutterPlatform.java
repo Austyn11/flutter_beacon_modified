@@ -16,10 +16,12 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import org.altbeacon.beacon.BeaconTransmitter;
+import org.altbeacon.beacon.logging.LogManager;
 
 import java.lang.ref.WeakReference;
 
 class FlutterPlatform {
+  private static final String TAG = "FlutterPlatform";
   private final WeakReference<Activity> activityWeakReference;
   
   FlutterPlatform(Activity activity) {
@@ -95,8 +97,9 @@ class FlutterPlatform {
     BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     if (enable) {
       bluetoothAdapter.enable();
-    } else {
+      LogManager.i(TAG, "bluetoothAdapter enabled");
       bluetoothAdapter.disable();
+      LogManager.i(TAG, "bluetoothAdapter disabled");
     }
 
   }
