@@ -96,10 +96,10 @@ class FlutterPlatform {
 //    } else {
     BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     if (enable) {
-      bluetoothAdapter.enable();
-      LogManager.i(TAG, "bluetoothAdapter enabled");
+      boolean isBTEnabled = bluetoothAdapter.enable();
+      LogManager.i(TAG, "bluetoothAdapter enabled" + isBTEnabled);
     } else {
-      bluetoothAdapter.disable();
+      boolean isBTEnabled = bluetoothAdapter.disable();
       LogManager.i(TAG, "bluetoothAdapter disabled");
     }
 
