@@ -204,9 +204,12 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
 
     if (call.method.equals("isBeaconServiceBound")) {
       if (beaconManager.isAnyConsumerBound()) {
+        LogManager.i(TAG, "beaconManager.isAnyConsumerBound() true");
         if (beaconManager.isBound(beaconScanner.beaconConsumer)) {
+          LogManager.i(TAG, "beaconManager.isBound(beaconScanner.beaconConsumer) true");
           result.success(0);  // 정상 연결
         } else {
+          LogManager.i(TAG, "beaconManager.isBound(beaconScanner.beaconConsumer) false");
           Region region = new Region("FitforMe",null,null,null);  // FitforMe  CustomBeacon
           beaconManager.stopRangingBeacons(region);
 //          beaconManager.stopRangingBeacons(region);
@@ -215,6 +218,7 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
           result.success(1);  // unbind error
         }
       } else {
+        LogManager.i(TAG, "beaconManager.isAnyConsumerBound() false");
         result.success(2);  // not bound
       }
       return;
