@@ -177,6 +177,7 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
     if (call.method.equals("checkPermissions")) {
 //      Map<String, Boolean> permissionsGranted = platform.checkPermissions();
       boolean permissionsGranted = checkPermissions();
+      LogManager.i(TAG, "onMethodCall checkPermissions permissionsGranted:" + permissionsGranted);
       result.success(permissionsGranted);
     }
 
@@ -539,7 +540,7 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
         isAllGranted = false;
       }
     }
-
+    LogManager.i(TAG, "checkPermissions isAllGranted:" + isAllGranted);
     return isAllGranted;
   }
 
