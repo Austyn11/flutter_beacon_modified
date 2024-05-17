@@ -59,13 +59,12 @@ class FlutterBeacon {
   /// Initialize scanning API.
   Future<bool> get initializeScanning async {
     final result = await _methodChannel.invokeMethod('initialize');
-
+    print("_methodChannel initializeScanning result: $result");
     if (result is bool) {
       return result;
     } else if (result is int) {
       return result == 1;
     }
-
     return result;
   }
 
@@ -77,6 +76,18 @@ class FlutterBeacon {
     //   return result;
     // }
     // return result == 1;
+  }
+
+  Future<bool> get requestPermissions async {
+    final result = await _methodChannel.invokeMethod('requestPermissions');
+    print("_methodChannel requestPermissions result: $result");
+    return result;
+  }
+
+  Future<bool> get checkPermissions async {
+    final result = await _methodChannel.invokeMethod('checkPermissions');
+    print("_methodChannel checkPermissions result: $result");
+    return result;
   }
 
   /// Initialize scanning API and check required permissions.
