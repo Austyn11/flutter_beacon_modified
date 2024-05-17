@@ -155,7 +155,9 @@ class FlutterPlatform {
 
     boolean isAllGranted = true;
     for (String permission : permissions) {
-      if (!(ContextCompat.checkSelfPermission(getActivity(), permission) == PackageManager.PERMISSION_GRANTED)) {
+      boolean isGranted = ContextCompat.checkSelfPermission(getActivity(), permission) == PackageManager.PERMISSION_GRANTED;
+      LogManager.i(TAG, "checkPermissions" + permission +":"+ isGranted);
+      if (!isGranted) {
         isAllGranted = false;
       }
     }
