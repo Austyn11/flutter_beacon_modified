@@ -181,6 +181,7 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
     }
 
     if (call.method.equals("requestPermissions")) {
+      LogManager.i(TAG, "onMethodCall requestPermissions");
       requestPermissions();
 //      result.success(true);
     }
