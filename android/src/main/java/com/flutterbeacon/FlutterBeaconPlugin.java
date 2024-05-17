@@ -19,6 +19,9 @@ import org.altbeacon.beacon.BeaconParser;
 import org.altbeacon.beacon.Region;
 import org.altbeacon.beacon.logging.LogManager;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
@@ -40,6 +43,8 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
 
   static final int REQUEST_CODE_LOCATION = 1234;
   static final int REQUEST_CODE_BLUETOOTH = 5678;
+
+  static final int REQUEST_PERMISSIONS = 7890;
 
   private FlutterPluginBinding flutterPluginBinding;
   private ActivityPluginBinding activityPluginBinding;
@@ -164,6 +169,17 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
 
   @Override
   public void onMethodCall(@NonNull MethodCall call, @NonNull final Result result) {
+    if (call.method.equals("checkPermissions")) {
+//      Map<String, Boolean> permissionsGranted = platform.checkPermissions();
+      boolean permissionsGranted = platform.checkPermissions();
+      result.success(permissionsGranted);
+    }
+
+    if (call.method.equals("requestPermissions")) {
+      platform.requestPermissions();
+      result.success(null);
+    }
+
     if (call.method.equals("initialize")) {
       if (beaconManager != null && !beaconManager.isBound(beaconScanner.beaconConsumer)) {
 
@@ -223,19 +239,6 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
       }
       return;
     }
-//    if (call.method.equals("isBeaconServiceBound")) {
-//      if (beaconManager != null) {
-//        if (beaconManager.isBound(beaconScanner.beaconConsumer)) {
-//          result.success(true);
-//        } else {
-//          result.success(false);
-//          beaconManager.unbind(beaconScanner.beaconConsumer);
-//        }
-//      } else {
-//        result.success(false);
-//      }
-//      return;
-//    }
 
     if (call.method.equals("initializeAndCheck")) {
       initializeAndCheck(result);
@@ -384,7 +387,6 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
         beaconScanner.stopMonitoring();
         beaconManager.removeAllMonitorNotifiers();
         if (beaconManager.isBound(beaconScanner.beaconConsumer)) {
-          LogManager.i(TAG, "close unbind");
           beaconManager.unbind(beaconScanner.beaconConsumer);
         }
       }
@@ -470,6 +472,25 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
   // region ACTIVITY CALLBACK
   @Override
   public boolean onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+//    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    if (requestCode == REQUEST_PERMISSIONS) {
+//      Map<String, Boolean> permissionResults = new HashMap<>();
+      for (int i = 0; i < permissions.length; i++) {
+//        permissionResults.put(permissions[i], grantResults[i] == PackageManager.PERMISSION_GRANTED);
+        LogManager.i(TAG, "onRequestPermissionsResult permission:" + permissions[i] + "results:"+ grantResults[i]);
+      }
+//      // Optional: Do something with the results, like sending them to Flutter
+//      for (Map.Entry<String, Boolean> entry : permissionResults.entrySet()) {
+//        String permission = entry.getKey();
+//        boolean granted = entry.getValue();
+//        String message = granted ? permission + " granted" : permission + " denied";
+//        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+//      }
+    }
+
+
+
+
     if (requestCode != REQUEST_CODE_LOCATION) {
       return false;
     }
