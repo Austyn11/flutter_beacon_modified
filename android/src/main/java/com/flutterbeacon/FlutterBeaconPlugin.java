@@ -1,5 +1,6 @@
 package com.flutterbeacon;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -13,13 +14,17 @@ import android.os.Build;
 import android.os.RemoteException;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import org.altbeacon.beacon.BeaconManager;
 import org.altbeacon.beacon.BeaconParser;
 import org.altbeacon.beacon.Region;
 import org.altbeacon.beacon.logging.LogManager;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
@@ -44,8 +49,8 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
   static final int REQUEST_CODE_LOCATION = 1234;
   static final int REQUEST_CODE_BLUETOOTH = 5678;
 
-  static final int REQUEST_PERMISSIONS = 7890;
-
+  static final int REQUEST_PERMISSIONS = 4321;
+  static final int REQUEST_BACKGROUND_LOCATION = 8765;
   private FlutterPluginBinding flutterPluginBinding;
   private ActivityPluginBinding activityPluginBinding;
 
@@ -63,7 +68,7 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
   private EventChannel eventChannelMonitoring;
   private EventChannel eventChannelBluetoothState;
   private EventChannel eventChannelAuthorizationStatus;
-
+//  private EventChannel eventChannelPermissions;
   public FlutterBeaconPlugin() {
 
   }
@@ -171,13 +176,13 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
   public void onMethodCall(@NonNull MethodCall call, @NonNull final Result result) {
     if (call.method.equals("checkPermissions")) {
 //      Map<String, Boolean> permissionsGranted = platform.checkPermissions();
-      boolean permissionsGranted = platform.checkPermissions();
+      boolean permissionsGranted = checkPermissions();
       result.success(permissionsGranted);
     }
 
     if (call.method.equals("requestPermissions")) {
-      platform.requestPermissions();
-      result.success(true);
+      requestPermissions();
+//      result.success(true);
     }
 
     if (call.method.equals("initialize")) {
@@ -457,6 +462,87 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
     }
   }
 
+  void requestPermissions() {
+    List<String> permissions = new ArrayList<>();
+    permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+    permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
+    permissions.add(Manifest.permission.BLUETOOTH_CONNECT);
+    permissions.add(Manifest.permission.BLUETOOTH_SCAN);
+    permissions.add(Manifest.permission.BLUETOOTH_ADMIN);
+    permissions.add(Manifest.permission.FOREGROUND_SERVICE);
+    permissions.add(Manifest.permission.POST_NOTIFICATIONS);
+    permissions.add(Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+    permissions.add(Manifest.permission.SYSTEM_ALERT_WINDOW);
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      permissions.add(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
+    }
+
+    List<String> permissionsToRequest = new ArrayList<>();
+    for (String permission : permissions) {
+      if (ContextCompat.checkSelfPermission(activityPluginBinding.getActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
+        permissionsToRequest.add(permission);
+      }
+    }
+
+    if (!permissionsToRequest.isEmpty()) {
+      ActivityCompat.requestPermissions(activityPluginBinding.getActivity(), permissionsToRequest.toArray(new String[0]), FlutterBeaconPlugin.REQUEST_PERMISSIONS);
+    } else {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (ContextCompat.checkSelfPermission(activityPluginBinding.getActivity(), Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+          ActivityCompat.requestPermissions(activityPluginBinding.getActivity(), new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION}, REQUEST_BACKGROUND_LOCATION);
+        } else {
+          sendPermissionResult(true);
+          LogManager.i(TAG, "All permissions are already granted");
+//      Toast.makeText(this, "All permissions are already granted", Toast.LENGTH_SHORT).show();
+        }
+      } else {
+        sendPermissionResult(true);
+        LogManager.i(TAG, "All permissions are already granted");
+//      Toast.makeText(this, "All permissions are already granted", Toast.LENGTH_SHORT).show();
+      }
+
+
+    }
+  }
+
+  //  Map<String, Boolean> checkPermissions() {
+  boolean checkPermissions() {
+    List<String> permissions = new ArrayList<>();
+    permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+    permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
+    permissions.add(Manifest.permission.BLUETOOTH_CONNECT);
+    permissions.add(Manifest.permission.BLUETOOTH_SCAN);
+    permissions.add(Manifest.permission.BLUETOOTH_ADMIN);
+    permissions.add(Manifest.permission.FOREGROUND_SERVICE);
+    permissions.add(Manifest.permission.POST_NOTIFICATIONS);
+    permissions.add(Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+//    permissions.add(Manifest.permission.SYSTEM_ALERT_WINDOW);
+
+//    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+//      permissions.add(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
+//    }
+
+//    Map<String, Boolean> permissionStatus = new HashMap<>();
+//    for (String permission : permissions) {
+//      boolean granted = ContextCompat.checkSelfPermission(getActivity(), permission) == PackageManager.PERMISSION_GRANTED;
+//      permissionStatus.put(permission, granted);
+//    }
+//    return permissionStatus;
+
+    boolean isAllGranted = true;
+    for (String permission : permissions) {
+      boolean isGranted = ContextCompat.checkSelfPermission(activityPluginBinding.getActivity(), permission) == PackageManager.PERMISSION_GRANTED;
+      LogManager.i(TAG, "checkPermissions" + permission +":"+ isGranted);
+      if (!isGranted) {
+        isAllGranted = false;
+      }
+    }
+
+    return isAllGranted;
+  }
+
+
   private final EventChannel.StreamHandler locationAuthorizationStatusStreamHandler = new EventChannel.StreamHandler() {
     @Override
     public void onListen(Object arguments, EventChannel.EventSink events) {
@@ -472,25 +558,33 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
   // region ACTIVITY CALLBACK
   @Override
   public boolean onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-//    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     if (requestCode == REQUEST_PERMISSIONS) {
-//      Map<String, Boolean> permissionResults = new HashMap<>();
+      Map<String, Boolean> permissionResults = new HashMap<>();
       for (int i = 0; i < permissions.length; i++) {
-//        permissionResults.put(permissions[i], grantResults[i] == PackageManager.PERMISSION_GRANTED);
-        LogManager.i(TAG, "onRequestPermissionsResult permission:" + permissions[i] + "results:"+ grantResults[i]);
+        permissionResults.put(permissions[i], grantResults[i] == PackageManager.PERMISSION_GRANTED);
       }
-//      // Optional: Do something with the results, like sending them to Flutter
-//      for (Map.Entry<String, Boolean> entry : permissionResults.entrySet()) {
-//        String permission = entry.getKey();
-//        boolean granted = entry.getValue();
-//        String message = granted ? permission + " granted" : permission + " denied";
+
+      // Optional: Do something with the results, like sending them to Flutter
+      for (Map.Entry<String, Boolean> entry : permissionResults.entrySet()) {
+        String permission = entry.getKey();
+        boolean granted = entry.getValue();
+        String message = granted ? permission + " granted" : permission + " denied";
+        LogManager.i(TAG, message);
 //        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-//      }
+      }
+
+      // If all foreground permissions are granted, request background location permission
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (ContextCompat.checkSelfPermission(activityPluginBinding.getActivity(), Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+          ActivityCompat.requestPermissions(activityPluginBinding.getActivity(), new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION}, REQUEST_BACKGROUND_LOCATION);
+        } else {
+          sendPermissionResult(true);
+        }
+      } else {
+        sendPermissionResult(true);
+      }
     }
-
-
-
-
+////////
     if (requestCode != REQUEST_CODE_LOCATION) {
       return false;
     }
@@ -550,6 +644,13 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
     }
     return false;
 
+  }
+
+  private void sendPermissionResult(boolean allGranted) {
+    if (flutterResult != null) {
+      flutterResult.success(allGranted);
+      flutterResult = null;
+    }
   }
 
 }
